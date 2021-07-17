@@ -1,0 +1,19 @@
+{
+  "name": "d20tactics_game",
+  "version": "1.0.0",
+  "description": "primary game code for D20 Tactics",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "path": "^0.12.7",
+    "webpack": "^5.44.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^9.0.1"
+  }
+}
