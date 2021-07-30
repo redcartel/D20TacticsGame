@@ -14,6 +14,10 @@ export default class Map {
         window.faceClick = (coords, face) => this.receiveClick(coords, face);
     }
 
+    attachState(gameState) {
+        gameState.map = this;
+    }
+
     receiveClick(coords, face) {
         console.log(JSON.stringify(coords) + ': ' + face);
     }
@@ -51,6 +55,24 @@ export default class Map {
             this.blocks.push(xSheet);
             this.surfaces.push(sxSheet);
         }
+    }
+
+    clearance(coords) {
+        for (var y = coords[1] + 1; y < this.dimensions[1]; y++) {
+            if (this.blocks[coords[0]][y][coords[2]] != null) {
+                return (y - coords[1] - 1);
+            };
+        }
+        return Infinity;
+    }
+
+    subClearance(coords) {
+        for (var y = coords[1] - 1; y >= 0; y--) {
+            if (this.blocks[coords[0]][y][coords[2]] != null) {
+                return (coords[1] - y - 1);
+            };
+        }
+        return Infinity;
     }
 
     // TODO: For now, maps can only be added to prior to rendering
@@ -120,23 +142,43 @@ export default class Map {
         return Math.abs(from[0] - to[0]) + Math.abs(from[2] - to[2]);
     }
 
-    pathAdjacencies(square) {
+    pathAdjacencies(square, clearance = 2, exploreNonSurfaces = false, stepUp = true, stepDown = true) {
         // if (square == null) return [];
         // if (square[0] < 0 || square[0] >= this.dimensions[0]) return [];
         // if (square[1] < 1 || square[1] >= this.dimensions[1]) return [];
         // if (square[2] < 2 || square[2] >= this.dimensions[2]) return [];
-        if (this.surfaces[square[0]][square[1]][square[2]] !== true) return [];
+
+        if (!exploreNonSurfaces && this.surfaces[square[0]][square[1]][square[2]] !== true) return [];
         var _adjacencies = [];
-        var possibilities = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [1, 1, 0], [-1, 1, 0], [0, 1, 1], [0, 1, -1], [1, -1, 0], [-1, -1, 0], [0, -1, 1], [0, -1, -1]];
+        var possibilities = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]]
+        if (stepUp) possibilities.push([1, 1, 0]);
+        if (stepUp) possibilities.push([0, 1, 1]);
+        if (stepUp) possibilities.push([-1, 1, 0]);
+        if (stepUp) possibilities.push([0, 1, -1]);
+        if (stepDown) possibilities.push([1, -1, 0]);
+        if (stepDown) possibilities.push([-1, -1, 0]);
+        if (stepDown) possibilities.push([0, -1, 1]);
+        if (stepDown) possibilities.push([0, -1, -1]);
         for (var delta of possibilities) {
             var checkX = square[0] + delta[0];
             var checkY = square[1] + delta[1];
             var checkZ = square[2] + delta[2];
+            
             if (checkX < 0 || checkX >= this.dimensions[0]) continue;
             if (checkY < 0 || checkY >= this.dimensions[1]) continue;
             if (checkZ < 0 || checkZ >= this.dimensions[2]) continue;
-            if (this.surfaces[checkX][checkY][checkZ] !== true) continue;
-            _adjacencies.push([checkX, checkY, checkZ]);
+            if (this.clearance([checkX, checkY, checkZ]) < clearance) {
+                //console.log('Insufficient clearance at ' + JSON.stringify([checkX, checkY, checkZ]));
+                continue;}
+            if (exploreNonSurfaces) {
+                _adjacencies.push([checkX, checkY, checkZ]);
+            }
+            else {
+                //console.log(`surfaces ${checkX} = ${JSON.stringify(this.surfaces[checkX])}`);
+                if (this.surfaces[checkX][checkY][checkZ] == true) {
+                    _adjacencies.push([checkX, checkY, checkZ]);
+                }
+            }
         }
         return _adjacencies;
     }
@@ -165,8 +207,11 @@ export default class Map {
         return reversed;
     }
 
-    aStar(from, to) {
-        if (!this.canPath(from, to)) return null;
+    aStar(from, to, clearance = 2, exploreNonSurfaces = false, stepUp = true, stepDown = true) {
+        if (exploreNonSurfaces !== true) exploreNonSurfaces = false;
+        if (!exploreNonSurfaces) {
+            if (!this.canPath(from, to)) return null;
+        }
         var openHeap = new MinHeap();
         var cameFrom = {};
         var gScore = {};
@@ -191,7 +236,7 @@ export default class Map {
                 return this.reconstruct(cameFrom, coords);
             }
             openHeap.remove();
-            for (var neighbor of this.pathAdjacencies(coords)) {
+            for (var neighbor of this.pathAdjacencies(coords, clearance, exploreNonSurfaces, stepUp, stepDown)) {
                 // TODO: movement with cost other than 5feet
                 var tentativeGScore = gOf(coords) + 5;
                 if (tentativeGScore < gOf(neighbor)) {
@@ -203,7 +248,10 @@ export default class Map {
             }
         }
     }
-    
+
+    /**
+     * All surface coordinates within d steps of an origin
+     */
     closeSurfaces(coords, d) {
         var selectedSquares = {};
         if (!this.surfaces[coords[0], coords[1], coords[2]]) {
@@ -215,7 +263,8 @@ export default class Map {
             for (var strCoords in selectedSquares) {
                 var surfaceCoords = strToCoords(strCoords);
                 if (selectedSquares[strCoords] == currentD) {
-                    for (var adjCoords of this.pathAdjacencies(surfaceCoords)) {
+                    var adjCoords;
+                    for (adjCoords of this.pathAdjacencies(surfaceCoords, 2)) { // TODO: make clearance variable
                         if (!(adjCoords in selectedSquares)) {
                             addCoords.push(adjCoords);
                         }
@@ -235,6 +284,9 @@ export default class Map {
     }
 }
 
+// copied and pasted from a blog where comments suggest there are bugs.
+// but it seems to work
+// TODO: investigate this
 class MinHeap {
 
     constructor() {

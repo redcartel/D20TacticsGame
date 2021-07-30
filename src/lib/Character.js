@@ -1,7 +1,9 @@
-import {toSpaceCoords} from './util';
+import { toSpaceCoords } from './util';
 import AnimationPath from './AnimationPath';
 
-export default  class Character {
+export default class Character {
+    animationGroup;
+
     constructor(name, sprite = null, position = null, scale = null) {
         this.name = name;
         this.sprite = sprite;
@@ -13,10 +15,27 @@ export default  class Character {
         _i.createCharacter(this.name, this.sprite?.name, this.scale)
     }
 
-    place(position = null) {
-        if (position != null) this.position = position;
-        if (this.position == null) this.position = [0, 0, 0];
-        _i.placeCharacter(this.name, toSpaceCoords(this.position))
+    destroy() {
+        try {
+
+            _i.destroyCharacter(this.name);
+            console.log('destroy ' + this.name);
+        }
+        catch (e) {
+            console.error(`Error calling _i.destroyCharacter for ${this.name}`);
+            console.error(e);
+        }
+    }
+
+    place(position) {
+        this.position = position;
+        try {
+            _i.placeCharacter(this.name, toSpaceCoords(this.position));
+        }
+        catch (e) {
+            console.error(`Error calling _i.placeCharacter for ${this.name} ${JSON.stringify(this.position)}`);
+            console.error(e);
+        }
     }
 
     setSprite(sprite) {
@@ -25,12 +44,15 @@ export default  class Character {
     }
 
     setAnimationGroup(group) {
-        try {
-            _i.setCharacterAnimationGroup(this.name, group.name)
-        }
-        catch (e) {
-            console.error(`Error calling _i.setCharacterAnimationGroup on ${this.name} with ${JSON.stringify(group)}`);
-            console.error(e);
+        if (!(this.animationGroup) || this.animationGroup.name !== group.name) {
+            try {
+                _i.setCharacterAnimationGroup(this.name, group.name)
+                this.animationGroup = group;
+            }
+            catch (e) {
+                console.error(`Error calling _i.setCharacterAnimationGroup on ${this.name} with ${JSON.stringify(group)}`);
+                console.error(e);
+            }
         }
     }
 
@@ -44,9 +66,8 @@ export default  class Character {
         }
     }
 
-    setPathFromSequence(coordList, animationGroup, ticks = 15, _eval=null) {
+    setPathFromSequence(coordList, animationGroup, ticks = 15, _eval = null) {
         var _path = AnimationPath.fromSequence(this.name + '_path', animationGroup, coordList, ticks, _eval);
-        console.log(JSON.stringify(_path));
         this.setPath(_path);
     }
 
@@ -57,6 +78,39 @@ export default  class Character {
         catch (e) {
             console.error(`Error calling _i.focusCameraOnCharacter for ${this.name}`);
             console.error(e);
+        }
+    }
+
+    unfollowWithCamera() {
+        try {
+            _i.unfocusCamera()
+        }
+        catch (e) {
+            console.error(`Error calling _i.unfocusCamera for ${this.name}`);
+            console.error(e);
+        }
+    }
+
+    centerInCamera() {
+        try {
+            _i.moveCameraToCharacter(this.name);
+        }
+        catch (e) {
+            console.error(`Error calling _i.moveCameraToCharacter for ${this.name}`);
+            console.error(e);
+        }
+    }
+
+    receiveClick() {
+        console.log(`Script detected click on ${this.name}`);
+    }
+
+    destroy() {
+        try {
+
+        }
+        catch (e) {
+
         }
     }
 }

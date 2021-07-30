@@ -8,10 +8,16 @@ export default class HighlightGroup {
     }
 
     highlightMultiple(coordinateList, faces = null) {
-        if (coordinateList == null) coordinateList = [];
-        if (faces == null) faces = [0,1,2,3,4];
-        for (var coords of coordinateList) {
-            this.highlightFaces(coords, faces);
+        try {
+            if (!coordinateList) coordinateList = [];
+            if (!faces) faces = [0, 1, 2, 3, 4];
+            for (var coords of coordinateList) {
+                this.highlightFaces(coords, faces);
+            }
+        }
+        catch (e) {
+            console.error(`Error calling HighlightGroup.highlightMultpile with ${JSON.stringify(coordinateList)} and ${JSON.stringify(faces)}`);
+            console.error(e);
         }
     }
 

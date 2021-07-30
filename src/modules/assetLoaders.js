@@ -17,7 +17,8 @@ export const Sprites = {
     rogueDRWalk3: new Sprite('game/sprites/rogue2', 'assets/Rog.png', null, [150,15,18,34]),
     rogueURWalk1: new Sprite('game/sprites/rogue3', 'assets/Rog.png', null, [213,16,21,35]),
     rogueURWalk2: new Sprite('game/sprites/rogue4', 'assets/Rog.png', null, [278,16,19,35]),
-    rogueURWalk3: new Sprite('game/sprites/rogue5', 'assets/Rog.png', null, [314,16,23,35])
+    rogueURWalk3: new Sprite('game/sprites/rogue5', 'assets/Rog.png', null, [341,16,23,35]),
+    logo: new Sprite('game/sprites/logo', 'assets/Logo.png')
 };
 
 export const VoxelTextures = {
@@ -62,7 +63,7 @@ export const Animations = {
         { sprite: Sprites.rogueDRWalk3, ticks: 45}
     ]),
 
-    rogueWalkDL: new Animation('game/animations/rogueWalkDR', [
+    rogueWalkDL: new Animation('game/animations/rogueWalkDL', [
         { sprite: Sprites.rogueDRWalk1, ticks: 15, flip: true},
         { sprite: Sprites.rogueDRWalk2, ticks: 30, flip: true},
         { sprite: Sprites.rogueDRWalk3, ticks: 45, flip: true}
@@ -74,7 +75,7 @@ export const Animations = {
         { sprite: Sprites.rogueURWalk3, ticks: 45}
     ]),
 
-    rogueWalkUL: new Animation('game/animations/rogueWalkUR', [
+    rogueWalkUL: new Animation('game/animations/rogueWalkUL', [
         { sprite: Sprites.rogueURWalk1, ticks: 15, flip: true},
         { sprite: Sprites.rogueURWalk2, ticks: 30, flip: true},
         { sprite: Sprites.rogueURWalk3, ticks: 45, flip: true}
