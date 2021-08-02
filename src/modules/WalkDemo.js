@@ -78,7 +78,7 @@ export default WalkDemo = (xDim, zDim) => {
 function WPContinue(xDim, zDim) {
     window.game._map.render();
     window.game._cleric = new Character('game.cleric', Sprites.cleric0, [1, 0, 1]);
-    registerCharacterForClicks(window.game._cleric);
+    //registerCharacterForClicks(window.game._cleric);
     window.game._cleric.place([1, 0, 1]);
     window.game._cleric.x = 1;
     window.game._cleric.y = 0;

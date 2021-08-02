@@ -9,6 +9,7 @@ import MapGenDemo from './MapGenDemo';
 import UIImage from '../lib/UIImage';
 import GameRules from './GameRulesDemo';
 import {setOnScreenControls} from '../lib/UIManager';
+import SpriteAnimation from './SpriteAnimation';
 
 window.game = window.game ?? {};
 
@@ -23,7 +24,7 @@ export default MainMenu = () => {
     window.game._dialog.setText("D20 Tactics\nMain Menu");
     window.game._dialog.addButton("Path-Walk", [16, 320], [200, 28], "window.game._walkDemo()");
     window.game._dialog.addButton("Distance Click", [16, 260], [200, 28], "window.game._distanceDemo()");
-    window.game._dialog.addButton("Move Action", [16, 200], [200,28], "window.game._moveAction()");
+    window.game._dialog.addButton("Sprite and Animation", [16, 200], [200,28], "window.game._spriteAnim()");
     window.game._dialog.addButton("Map Gen", [16, 140], [200,28], "window.game._mapGenDemo()");
     window.game._dialog.addButton("Game Rules", [16, 80], [200, 28], "window.game._gameRules()");
 }
@@ -52,4 +53,9 @@ window.game._mapGenDemo = () => {
 window.game._gameRules = () => {
     window.game.scene = new Scene('gameRules', null, true, true);
     GameRules();
+}
+
+window.game._spriteAnim = () => {
+    window.game.scene = new Scene('spriteAnimation', null, true, true);
+    new SpriteAnimation();
 }

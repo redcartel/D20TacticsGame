@@ -47,6 +47,7 @@ export default class SceneState {
     add(object) {
         this._listeners.push(object);
         object.state = this;
+        if ('addState' in object) object.addState();
     }
 
     update() {
@@ -56,7 +57,6 @@ export default class SceneState {
     }
 
     setup() {
-        console.log('setup');
         this.stateChain = ['turn'];
         this.fillInitiativeOrder();
         this.initiativeIndex = 0;
@@ -64,7 +64,6 @@ export default class SceneState {
     }
 
     turnSetup() {
-        console.log('turnSetup');
         if (this.initiativeOrder.length == 0) {
             this.activeCharacter = null;
             this.stateChain = ['turn', 'noCharacters'];
@@ -97,7 +96,9 @@ export default class SceneState {
         if (initiative == null) {
             this.gameCharacters[name].rollInitiative();
         }
+        else this.gameCharacters[name].initiative = initiative;
         this.update();
+        return this.gameCharacters[name];
     }
 
     fillInitiativeOrder() {
@@ -105,6 +106,7 @@ export default class SceneState {
         for (var key in this.gameCharacters) {
             this.initiativeOrder.push(this.gameCharacters[key]);
         }
-        this.initiativeOrder.sort((a, b) => a.initiative - b.initiative);
+        this.initiativeOrder.sort((a, b) => b.initiative - a.initiative);
+        return this.initiativeOrder;
     }
 }

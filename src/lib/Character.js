@@ -43,10 +43,11 @@ export default class Character {
         _i.setCharSprite(this.name, this.sprite?.name);
     }
 
-    setAnimationGroup(group) {
+    setAnimationGroup(group, reset = false) {
+        console.log('set animation group ' + group.name);
         if (!(this.animationGroup) || this.animationGroup.name !== group.name) {
             try {
-                _i.setCharacterAnimationGroup(this.name, group.name)
+                _i.setCharacterAnimationGroup(this.name, group.name, reset)
                 this.animationGroup = group;
             }
             catch (e) {
@@ -63,6 +64,16 @@ export default class Character {
         catch (e) {
             console.error(`Error calling _i.setPath for ${this.name} on ${path.name}: ${JSON.stringify(path)}`);
             console.error(e);
+        }
+    }
+
+    setFacing(facing) {
+        try {
+            _i.setCharacterFacing(this.name, facing);
+        }
+            catch (e) {
+                console.error(`Error calling _i.setFacing for ${this.name} with ${facing}`);
+                console.error(e);
         }
     }
 
@@ -101,7 +112,7 @@ export default class Character {
         }
     }
 
-    receiveClick() {
+    characterClick() {
         console.log(`Script detected click on ${this.name}`);
     }
 

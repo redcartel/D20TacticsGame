@@ -18,6 +18,13 @@ export const Sprites = {
     rogueURWalk1: new Sprite('game/sprites/rogue3', 'assets/Rog.png', null, [213,16,21,35]),
     rogueURWalk2: new Sprite('game/sprites/rogue4', 'assets/Rog.png', null, [278,16,19,35]),
     rogueURWalk3: new Sprite('game/sprites/rogue5', 'assets/Rog.png', null, [341,16,23,35]),
+    rogueURKneel: new Sprite('game/sprites/rogue6', 'assets/Rog.png', null, [403,11,26,28]),
+    rogueURDie: new Sprite('game/sprites/rogue7', 'assets/Rog.png', null, [531, 11, 34,29]),
+    // what the hell is up with selecting shorter sprites from the sheet?
+    // A: the y coordinate is from the bottom of the sheet
+    rogueDRKneel: new Sprite('game/sprites/rogue8', 'assets/Rog.png',null, [467,11,26,25]),
+    // TODO: pivot doesn't work
+    rogueDRDie: new Sprite('game/sprites/rogue9', 'assets/Rog.png', null, [595,9,38,19]),
     logo: new Sprite('game/sprites/logo', 'assets/Logo.png')
 };
 
@@ -80,6 +87,26 @@ export const Animations = {
         { sprite: Sprites.rogueURWalk2, ticks: 30, flip: true},
         { sprite: Sprites.rogueURWalk3, ticks: 45, flip: true}
     ]),
+
+    rogueDieDR: new Animation('game/animations/rogueDieDR', [
+        { sprite: Sprites.rogueDRKneel, ticks: 25 },
+        { sprite: Sprites.rogueDRDie, ticks: 50 },
+    ], false),
+
+    rogueDieUR: new Animation('game/animations/rogueDieUR', [
+        { sprite: Sprites.rogueURKneel, ticks: 25},
+        { sprite: Sprites.rogueURDie, ticks: 50}
+    ], false),
+
+    rogueDieDL: new Animation('game/animations/rogueDieDR', [
+        { sprite: Sprites.rogueDRKneel, ticks: 25, flip: true },
+        { sprite: Sprites.rogueDRDie, ticks: 50, flip: true },
+    ], false),
+
+    rogueDieUL: new Animation('game/animations/rogueDieUR', [
+        { sprite: Sprites.rogueURKneel, ticks: 25, flip: true},
+        { sprite: Sprites.rogueURDie, ticks: 50, flip: true}
+    ], false)
 }
 
 export const AnimationGroups = {
@@ -95,6 +122,13 @@ export const AnimationGroups = {
         Animations.rogueWalkUR,
         Animations.rogueWalkDR,
         Animations.rogueWalkDL
+    ]),
+
+    rogueDieGroup: new AnimationGroup('game/animationGroups/rogueDieGroup', [
+        Animations.rogueDieUL,
+        Animations.rogueDieUR,
+        Animations.rogueDieDR,
+        Animations.rogueDieDL
     ])
 }
 

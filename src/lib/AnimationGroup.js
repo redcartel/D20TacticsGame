@@ -1,4 +1,6 @@
 export default class AnimationGroup {
+    loop = true;
+
     constructor(name, animations = null) {
         this.name = name;
         var details = _i.getAnimationGroupDetails(name);

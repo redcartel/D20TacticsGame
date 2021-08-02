@@ -1,11 +1,13 @@
 export default class Animation {
-    constructor(name, frames = []) {
+    constructor(name, frames = [], loop = true) {
         this.name = name;
         var details = _i.getSpriteDetails(this.name);
         if (details != null && details.length > 0) {
             return;
         }
-        _i.createAnimation(this.name);
+        this.loop = loop;
+        // TODO: Non-looping animations are weird, clean them up
+        _i.createAnimation(this.name, loop);
         this.frames = [];
         for (var frame of frames) {
             this.addFrame(frame);

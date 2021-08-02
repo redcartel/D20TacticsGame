@@ -15,13 +15,16 @@ export default class SceneLoop {
                 this.state.update();
             }
             else if (this.state.stateChain[1] == 'mainMenu') {
-                console.log(this.state.ui);
                 this.state.ui.turnMenu();
                 this.state.update();
             }
             else if (this.state.stateChain[1] == 'makeMove') {
-                console.log('move selection');
                 this.state.ui.moveSelection();
+                this.state.update();
+            }
+            else if (this.state.stateChain[1] == 'attack') {
+                this.state.ui.attackSelection();
+                console.log('attack');
                 this.state.update();
             }
             else if (this.state.stateChain[1] == 'end') {

@@ -7,10 +7,17 @@ export default class GameTurn {
         gameCharacter.gameTurn = this;
         this.gameCharacter = gameCharacter;
         this.walk = this.gameCharacter.sheet?.walk ?? 0;
-        this.actions = ['action', 'move', 'bonus', 'reaction'];
+        this.actions = ['action', 'bonus', 'reaction'];
     }
 
     get hasMove() {
         return this.walk >= 1;
+    }
+
+    get hasAction() {
+        for (var act of this.actions) {
+            if (act == 'action') return true;
+        }
+        return false;
     }
 }
