@@ -4,8 +4,8 @@ export default class GameTurn {
     walk = 0;
 
     constructor(gameCharacter) {
-        gameCharacter.gameTurn = this;
         this.gameCharacter = gameCharacter;
+        this.gameCharacter.gameTurn = this;
         this.walk = this.gameCharacter.sheet?.walk ?? 0;
         this.actions = ['action', 'bonus', 'reaction'];
     }

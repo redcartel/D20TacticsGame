@@ -6,12 +6,17 @@ import AnimationGroup from '../lib/AnimationGroup';
 import VoxelDefinition from '../lib/VoxelDefinition';
 import DecalTexture from '../lib/DecalTexture';
 
+// TODO: offset doesn't work
 export const Sprites = {
     cleric0: new Sprite('game/sprites/cleric0', 'assets/Cleric.png', null, [22, 15, 18, 37]),
     cleric1: new Sprite('game/sprites/cleric1', 'assets/Cleric.png', null, [86, 15, 20, 37]),
     cleric2: new Sprite('game/sprites/cleric2', 'assets/Cleric.png', null, [213, 15, 18, 36]),
     cleric3: new Sprite('game/sprites/cleric3', 'assets/Cleric.png', null, [277, 15, 20, 36]),
     cleric4: new Sprite('game/sprites/cleric4', 'assets/Cleric.png', null, [150, 15, 18, 37]),
+    clericURKneel: new Sprite('game/sprites/cleric5', 'assets/Cleric.png', null, [403,11,25,28]),
+    clericURDie: new Sprite('game/sprites/cleric6', 'assets/Cleric.png', null, [531,11,29,28]),
+    clericDRKneel: new Sprite('game/sprites/cleric7', 'assets/Cleric.png', null, [467,11,28,24]),
+    clericDRDie: new Sprite('game/sprites/cleric8', 'assets/Cleric.png', null, [595,7,34,19]),
     rogueDRWalk1: new Sprite('game/sprites/rogue0', 'assets/Rog.png', null, [22,15,18,34]),
     rogueDRWalk2: new Sprite('game/sprites/rogue1', 'assets/Rog.png', null, [84,15,21,37]),
     rogueDRWalk3: new Sprite('game/sprites/rogue2', 'assets/Rog.png', null, [150,15,18,34]),
@@ -64,6 +69,26 @@ export const Animations = {
         { sprite: Sprites.cleric3, ticks: 50, flip: true }
     ]),
 
+    clericDieDR: new Animation('game/animations/clericDieDR', [
+        { sprite: Sprites.clericDRKneel, ticks: 25 },
+        { sprite: Sprites.clericDRDie, ticks: 50 },
+    ], false),
+
+    clericDieUR: new Animation('game/animations/clericDieUR', [
+        { sprite: Sprites.clericURKneel, ticks: 25},
+        { sprite: Sprites.clericURDie, ticks: 50}
+    ], false),
+
+    clericDieDL: new Animation('game/animations/clericDieDR', [
+        { sprite: Sprites.clericDRKneel, ticks: 25, flip: true },
+        { sprite: Sprites.clericDRDie, ticks: 50, flip: true },
+    ], false),
+
+    clericDieUL: new Animation('game/animations/clericDieUR', [
+        { sprite: Sprites.clericURKneel, ticks: 25, flip: true},
+        { sprite: Sprites.clericURDie, ticks: 50, flip: true}
+    ], false),
+
     rogueWalkDR: new Animation('game/animations/rogueWalkDR', [
         { sprite: Sprites.rogueDRWalk1, ticks: 15},
         { sprite: Sprites.rogueDRWalk2, ticks: 30},
@@ -115,6 +140,13 @@ export const AnimationGroups = {
         Animations.clericWalkUR,
         Animations.clericWalkDR,
         Animations.clericWalkDL
+    ]),
+
+    clericDieGroup: new AnimationGroup('game/animationGroups/clericDieGroup', [
+        Animations.clericDieUL,
+        Animations.clericDieUR,
+        Animations.clericDieDR,
+        Animations.clericDieDL
     ]),
 
     rogueWalkGroup: new AnimationGroup('game/animationGroups/rogueWalkGroup', [

@@ -32,7 +32,7 @@ export default class GameUI {
         if (this.firstMenu) this.firstMenu.destroy();
         this.firstMenu = new Dialog(this.state.activeCharacter.name + '\'s turn');
         this.firstMenu.setText(this.state.activeCharacter.name + '\'s turn');
-        this.firstMenu.place([1500, 500], [300, 300]);
+        this.firstMenu.place([1450, 300], [400, 400]);
 
         var endTurn = new Callback(() => {
             this.firstMenu.destroy();
@@ -41,12 +41,12 @@ export default class GameUI {
 
 
         if (this.state.activeCharacter.turn.hasMove) {
-            this.firstMenu.addButton('Move', [16, 200], [250, 28], moveAction.callString);
+            this.firstMenu.addButton('Move', [32, 232], [400, 64], moveAction.callString);
         }
         if (this.state.activeCharacter.turn.hasAction) {
-            this.firstMenu.addButton('Attack', [16, 150], [250, 28], attackAction.callString);
+            this.firstMenu.addButton('Attack', [32, 132], [400, 64], attackAction.callString);
         }
-        this.firstMenu.addButton('End Turn', [16, 100], [250, 28], endTurn.callString);
+        this.firstMenu.addButton('End Turn', [32, 32], [400, 64], endTurn.callString);
     }
 
     moveSelection() {
@@ -170,9 +170,9 @@ export default class GameUI {
         if (this.popup) {
             if (this.popupDialog) this.popupDialog.destroy();
             this.popupDialog = new Dialog('_popup');
-            this.popupDialog.setText(this.popup, .005);
-            this.popupDialog.place(1920 / 2 - 200, 0, 400, 64);
-            Callback.delayed(2, ()=> this.popupDialog.destroy());
+            this.popupDialog.setText(this.popup, .002);
+            this.popupDialog.place(32,32, 600, 300);
+            Callback.delayed(4, ()=> this.popupDialog.destroy());
             this.popup = null;
         }
     }

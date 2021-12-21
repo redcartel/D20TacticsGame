@@ -2,6 +2,8 @@ import { VoxelDefinitions } from './assetLoaders';
 import Map from '../lib/Map';
 import Light from '../lib/Light';
 import VoxelDefinition from '../lib/VoxelDefinition';
+import VoxelMap from '../lib/VoxelMap';
+import Decal from '../lib/Decal';
 
 export const standardLights = (map) => {
     map.addLight(new Light('std1', 'directional', null, [22.5, 0, 0], 0.8));
@@ -13,12 +15,42 @@ export const grassPlain = () => {
     for (var x = 0; x < 20; x++) {
         for (var z = 0; z < 20; z++) {
             _map.addVoxel([x, 0, z], VoxelDefinitions.grassDirt);
+            if (z == 10 && x % 2 == 0) {
+                placeWall([x, 0, z], 3, 1);
+            }
         }
     }
-    //window._map.render();
     return _map;
 }
 
+var walls = {};
+
+function placeWall(pos, height, side) {
+    var [x, y, z] = pos;
+    var [px, py, pz] = pos;
+    y = y / 2;
+    height = height / 2;
+    y = y + height / 2;
+    var r = 0;
+    if (side == 1) {
+        z = z + .5;
+    }
+    else if (side == 2) {
+        x = x + .5;
+        r = 90;
+    }
+    else if (side == 3) {
+        z = z - .5;
+        r = 180;
+    }
+    else if (side == 4) {
+        x = x - .5;
+        r = 270;
+    }
+    var wallDecal = new Decal(Math.random() + '', null, false);
+    wallDecal.place([x, y, z], [0, r, 0], [1, height, 0]);
+    walls[[px, py, pz, side]] = wallDecal;
+}
 export const walkObstacle = (xDim, zDim, map = null) => {
     var _map = new Map([xDim, 5, zDim]);
     for (var _x = 0; _x < xDim; _x++) {
@@ -28,7 +60,9 @@ export const walkObstacle = (xDim, zDim, map = null) => {
             if (x == 10 || z == 10 || x == 0 || z == 0) {
                 if (x == 1 || x == 2 || x == 9 || x == 11 || x == 17 || x == 18 ||
                     z == 1 || z == 2 || z == 9 || z == 11 || z == 17 || z == 18) {
-                    if (Math.random() > .3) _map.addVoxel([_x, 0, _z], VoxelDefinitions.stone);
+                    if (Math.random() > .3) {
+                        _map.addVoxel([_x, 0, _z], VoxelDefinitions.stone);
+                    }
                 }
             }
             else if ((x == 4 || x == 14) && ((z > 2 && z < 8) || (z > 12 && z < 18))) {
@@ -43,106 +77,21 @@ export const walkObstacle = (xDim, zDim, map = null) => {
                 _map.addVoxel([_x, 0, _z], VoxelDefinitions.grassDirt);
             }
         }
+
+        // for (var i = 1; i < 4; i++) {
+        //     _map.addVoxel([4, 4, 9], null);
+        //     _map.addVoxel([5, 4, 9], null);
+        //     _map.addVoxel([6, 4, 9], null);
+        //     _map.addVoxel([7, 4, 9], null);
+        //     _map.addVoxel([8, 4, 9], null);
+        //     _map.addVoxel([9, 4, 9], null);
+        // }
+
     }
     return _map;
 }
 
-export const dungeonAlpha = (containingObject, xDim, zDim, depth = 5, options = {}) => {
-    // var _map = containingObject['_map'] = new Map([xDim, depth, zDim]);
-    // var roomFloor = options['roomFloor'] ?? VoxelDefinitions.stone;
-    // var hallFloor = options['hallFloor'] ?? VoxelDefinitions.dirt;
-
-    // function room(x, z, y, w, h) {
-    //     if (x < 0) x = 0;
-    //     if (y < 0) y = 0;
-
-    //     if (x + w >= xDim) w = xDim - x - 1;
-    //     if (w < 2) {
-    //         w = 2;
-    //         x = xDim - 3;
-    //     }
-
-    //     if (z + h >= zDim) h = zDim - z - 1;
-    //     if (h < 2) {
-    //         h = 2;
-    //         z = zDim - 3;
-    //     }
-    //     for (var _x = x; _x < x + w; _x++) {
-    //         for (var _z = z; _z < z + h; _z++) {
-    //             for (var _y = 0; _y <= y; y++) {
-    //                 _map.addVoxel([_x, _y, _z], roomFloor);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // var nRooms = Math.floor((xDim * zDim / 144) * Math.random()) + 4;
-    // var wMax = xDim / 12 + 4;
-    // var hMax = zDim / 12 + 4;
-    // var potentialCorridors = [];
-
-    // for (var n = 0; n < nRooms; n++) {
-    //     var _x = Math.floor(Math.random() * xDim);
-    //     var _z = Math.floor(Math.random() * zDim);
-    //     var _y = Math.floor(Math.random() * depth); // TODO
-    //     var _w = Math.floor(Math.random() * wMax / 2) + Math.ceil(wMax / 2);
-    //     var _h = Math.floor(Math.random() * hMax / 2) + Math.ceil(hMax / 2);
-    //     room(_x, _z, _y, _w, _h);
-    //     var r = Math.floor(Math.random() * _w);
-    //     potentialCorridors.push([_x + r, _y, _z]);
-    //     var r = Math.floor(Math.random() * _w);
-    //     potentialCorridors.push([_x + r, _y, _z + _h - 1]);
-    //     var r = Math.floor(Math.random() * _h);
-    //     potentialCorridors.push([_x, _y, _z + r]);
-    //     var r = Math.floor(Math.random() * _h);
-    //     potentialCorridors.push([_x + _w - 1, _y, _z + r]);
-    // }
-    // var tries = 0;
-    // var successes = 0;
-    // console.log(1);
-    // while (successes < nRooms * 1.5 && tries < 100) {
-    //     tries++;
-    //     var coord1 = potentialCorridors[Math.floor(Math.random() * potentialCorridors.length)];
-    //     var coord2 = potentialCorridors[Math.floor(Math.random() * potentialCorridors.length)];
-    //     console.log('' + JSON.stringify(coord1) + ' to ' + JSON.stringify(coord2));
-    //     var stepUp = false;
-    //     var stepDown = false;
-    //     if (coord2[1] > coord1[1]) stepUp = true;
-    //     else if (coord1[1] > coord2[1]) stepDown = true;
-    //     var path = _map.aStar(coord1, coord2, 2, true, stepUp, stepDown);
-    //     console.log(JSON.stringify(path));
-    //     if (!path || path.length <= 1) {
-    //         continue;
-    //     }
-    //     var processedPath = [];
-    //     for (var backwardsI = path.length - 2; backwardsI >= 0; backwardsI--) {
-    //         var tryCoords = path[backwardsI];
-    //         var block = _map.blocks[tryCoords[0]][tryCoords[1]][tryCoords[2]];
-    //         if (block && block.name == roomFloor.name) {
-    //             continue;
-    //         }
-    //         else {
-    //             processedPath.push(tryCoords);
-    //         }
-    //     }
-    //     if (processedPath.length === 0) {
-    //         continue;
-    //     }
-    //     console.log('2');
-    //     for (var coords of processedPath) {
-    //         for (var y = 0; y <= coords[1]; y++) {
-    //             _map.addVoxel([coords[0], y, coords[2]], hallFloor);
-    //         }
-    //     }
-
-    //     successes++;
-    // }
-
-    // return _map;
-}
-
 function randomDoorLocation(room, xDim, zDim) {
-    console.log(JSON.stringify(room));
     var y = room.y;
     var zSide1 = room.z + room.h + 1;
     if (zSide1 >= zDim) zSide1 = null;
@@ -178,12 +127,22 @@ function randomDoorLocation(room, xDim, zDim) {
             res = [xSide4, y, r + room.z];
         }
     }
-    console.log(JSON.stringify(res));
     return res;
 }
 
+function doorOnSide(map, room, facing) {
+    var r;
+    if (facing == 1 || facing == 3) r = Math.floor(Math.random() * room.w);
+    else r = Math.floor(Math.random() * room.h);
+    if (facing == 1) {
+        return [room.x + r, room.y, room.z + room.h];
+    }
+    else if (facing == 2) {
+        return [room.x];
+    }
+}
+
 function fillRoom(map, room, voxelDef, raised = true) {
-    console.log('fill room ' + JSON.stringify(room));
     for (var x = room.x; x < room.x + room.w; x++) {
         for (var z = room.z; z < room.z + room.h; z++) {
             if (!raised) {
@@ -199,6 +158,7 @@ function fillRoom(map, room, voxelDef, raised = true) {
 }
 
 function fillCorridor(map, corridor, voxelDef, raised) {
+    console.log('fillCorridor');
     for (var coords of corridor) {
         if (raised) {
             for (var y = 0; y <= coords[1]; y++) {
@@ -211,54 +171,104 @@ function fillCorridor(map, corridor, voxelDef, raised) {
     }
 }
 
-export function dungeon1(xDim, yDim, zDim, lights = false) {
-    console.log('dungeon1');
-    var map = new Map([xDim, yDim, zDim]);
+export function voxDungeon(dimensions, lights = false) {
+    var [xDim, yDim, zDim] = dimensions;
+    var xSlice = Math.max(Math.floor(xDim / 10), 1);
+    var zSlice = Math.max(Math.floor(Math.floor(zDim / 10), 2));
+    var xMax = Math.min(8, xDim);
+    var zMax = Math.min(8, zDim);
+    var xMin = Math.min(3, xDim);
+    var zMin = Math.min(3, zDim);
     var rooms = [];
-    var corridors = [];
-    var nRooms = Math.ceil(Math.random() * (xDim * zDim / 144)) + 3;
-    var xMin = Math.ceil(xDim / 6);
-    var zMin = Math.ceil(zDim / 6);
-    var xMax = Math.ceil(xDim / 4);
-    var zMax = Math.ceil(zDim / 4)
-    console.log('1');
-    for (var i = 0; i < nRooms; i++) {
-        var y = Math.floor(Math.random() * yDim);
-        var w = Math.floor(Math.random() * (xMax - xMin)) + xMin;
-        var h = Math.floor(Math.random() * (zMax - zMin)) + xMin;
-        var x = Math.floor(Math.random() * (xDim - w));
-        var z = Math.floor(Math.random() * (zDim - h));
-        rooms.push({
-            x: x,
-            y: y,
-            z: z,
-            h: h,
-            w: w
-        });
+    var roomConnected = [];
+    for (var rowNum = 0; rowNum < xSlice; rowNum++) {
+        var row = [];
+        var connectRow = [];
+        for (var colNum = 0; colNum < zSlice; colNum++) {
+            var w = Math.floor(Math.random() * (xMax - xMin) + xMin);
+            var h = Math.floor(Math.random() * (zMax - zMin) + zMin);
+            row.append({
+                x: 10 * colNum + Math.floor(Math.random() * (8 - w)) + 1,
+                z: 10 * rowNum + Math.floor(Math.random() * (8 - w)) + 1,
+                w: w,
+                h: h,
+                y: Math.floor(Math.random() * yDim)
+            });
+            fillRoom(map, row[row.length - 1], VoxelDefinitions.stone);
+            connectRow.append(false);
+        }
+        rooms.append(row);
+        roomConnected.append(connectRow);
     }
-    for (var i = 0; i < rooms.length - 1; i++) {
-        var room1 = rooms[i];
-        for (var j = 0; j < 2; j++) {
-            var room2 = rooms[i + 1]; 
-            var hallStart = randomDoorLocation(room1, xDim, zDim);
-            var hallStop = randomDoorLocation(room2, xDim, zDim);
-            var stepUp = false;
-            var stepDown = false;
-            if (hallStop[1] > hallStart[1]) stepUp = true;
-            else if (hallStart[1] > hallStop[1]) stepDown = true;
-            console.log('astar');
-            var path = map.aStar(hallStart, hallStop, 2, true, stepUp, stepDown);
-            corridors.push(path);
+    while (1) {
+        var any = false;
+        for (var rowNum = 0; rowNum < xSlice; rowNum++) {
+            //for (var colNum = 0; colNum < )
         }
     }
-    console.log('4');
-    for (var corridor of corridors) {
-        fillCorridor(map, corridor, VoxelDefinitions.dirt, true);
-    }
-    console.log('5');
-    for (var room of rooms) {
+}
 
-        fillRoom(map, room, VoxelDefinitions.stone, true);
+export function fourRooms() {
+    var map = new Map([20, 1, 20]);
+    for (var x = 0; x < 20; x++) {
+        for (var z = 0; z < 20; z++) {
+            if (x == 10 && (z == 5 || z == 15)) {
+                map.addVoxel([x, 0, z], VoxelDefinitions.dirt);
+                placeWall([x, 0, z], 3, 1);
+                placeWall([x, 0, z], 3, 3);
+            }
+            else if (z == 10 && (x == 5 || x == 15)) {
+                map.addVoxel([x, 0, z], VoxelDefinitions.dirt);
+                placeWall([x, 0, z], 3, 2);
+                placeWall([x, 0, z], 3, 4);
+            }
+            else if (z == 10 || x == 10) {
+                //
+            }
+            else {
+                map.addVoxel([x, 0, z], VoxelDefinitions.stone);
+                if (x == 0) {
+                    placeWall([x, 0, z], 3, 4);
+                }
+                if (x == 19) {
+                    placeWall([x, 0, z], 3, 2);
+                }
+                if (z == 0) {
+                    placeWall([x, 0, z], 3, 3);
+                }
+                if (z == 19) {
+                    placeWall([x, 0, z], 3, 1);
+                }
+                if (x == 9) {
+                    if (z != 5 && z != 15) {
+                        placeWall([x, 0, z], 3, 2);
+                    }
+                }
+                if (x == 11) {
+                    if (z != 5 && z != 15) {
+                        placeWall([x, 0, z], 3, 4);
+                    }
+                }
+                if (z == 9) {
+                    if (x != 5 && x != 15) {
+                        placeWall([x, 0, z], 3, 1);
+                    }
+                }
+                if (z == 11) {
+                    if (x != 5 && x != 15) {
+                        placeWall([x, 0, z], 3, 3);
+                    }
+                }
+            }
+        }
     }
+    for (x of [0,1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19]) {
+        for (z of [0,1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19]) {
+            if (Math.random() < .3) {
+                var _ = new Light(`${Math.random()}`, 'point', [x,1.5,z],null, 1.5, 10, null, [255,128,0]);
+            }
+        }
+    }
+
     return map;
 }

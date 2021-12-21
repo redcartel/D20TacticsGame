@@ -78,7 +78,7 @@ export default class Map {
     // TODO: For now, maps can only be added to prior to rendering
     addVoxel(blockCoordinates, voxelDef) {
         if (this.rendered) return;
-        if (blockCoordinates[0] < 0 || blockCoordinates[0] >= this.dimensions[0] || blockCoordinates[1] < 0 || blockCoordinates[1] >= this.dimensions[1] || blockCoordinates[2] < 0 || blockCoordinates[2] >= this.dimensions[2]) {
+        if (blockCoordinates[0] < 0 || blockCoordinates[0] >= this.dimensions[0] || blockCoordinates[1] < -1 || blockCoordinates[1] >= this.dimensions[1] || blockCoordinates[2] < 0 || blockCoordinates[2] >= this.dimensions[2]) {
             console.error(`Coordinates ${blockCoordinates[0]}, ${blockCoordinates[1]}, ${blockCoordinates[2]} are outside of map dimension`);
             return;
         }
@@ -114,8 +114,16 @@ export default class Map {
 
     render() {
         this._genTextureToCoordsMap();
+        var sentinel = 0;
         for (var key in this.texMap) {
-            _i.placeVoxelsOfDefinition(key, this.texMap[key]);
+            if (sentinel > 10000) return;
+            if (key == null || key == 'null') {
+                //_i.placeVoxelsOfDefinition(null, this.texMap[key]);
+                console.log(`place ${this.texMap[key].length} null voxels`);
+            }
+            else {
+                _i.placeVoxelsOfDefinition(key, this.texMap[key]);
+            }
         }
         this.rendered = true;
         _i.genAllQuads();
@@ -163,13 +171,14 @@ export default class Map {
             var checkX = square[0] + delta[0];
             var checkY = square[1] + delta[1];
             var checkZ = square[2] + delta[2];
-            
+
             if (checkX < 0 || checkX >= this.dimensions[0]) continue;
             if (checkY < 0 || checkY >= this.dimensions[1]) continue;
             if (checkZ < 0 || checkZ >= this.dimensions[2]) continue;
             if (this.clearance([checkX, checkY, checkZ]) < clearance) {
                 //console.log('Insufficient clearance at ' + JSON.stringify([checkX, checkY, checkZ]));
-                continue;}
+                continue;
+            }
             if (exploreNonSurfaces) {
                 _adjacencies.push([checkX, checkY, checkZ]);
             }
@@ -366,10 +375,10 @@ class MinHeap {
         else if (this.heap.length === 2) {
             this.heap.splice(1, 1)
         } else {
-            return null
+            return null;
         }
 
-        return smallest
+        return smallest;
     }
 }
 

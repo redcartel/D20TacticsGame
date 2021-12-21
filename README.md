@@ -1,0 +1,5 @@
+# TODO:
+
+attack animations
+
+AI

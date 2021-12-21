@@ -14,13 +14,18 @@ export default class GameCharacter {
     HP;
     deathSaveSuccesses = 0;
     deathSaveFailures = 0;
+    isAI = false;
+    isAlive = true;
 
     constructor(name) {
         this.name = name;
-        this.position;
+        // TODO: this is a stupid hack
+        if (this.name == 'Sam') {
+            this.isAI = true;
+        }
     }
 
-    static fromPrefab(prefab, name) {
+    static fromPrefab(prefab, name, revealsMap = true) {
         var newC = new GameCharacter(name);
         newC.prefab = prefab;
 
@@ -35,7 +40,7 @@ export default class GameCharacter {
             newC.animations[key] = prefab.animations[key];
         }
 
-        newC.character = new Character(name, prefab.defaultSprite ?? null, null, prefab.scale ?? null);
+        newC.character = new Character(name, prefab.defaultSprite ?? null, null, prefab.scale ?? null, revealsMap);
         this.animationState = 'idle';
         if (newC.animations.idle) newC.character.setAnimationGroup(newC.animations.idle);
         return newC;
@@ -65,13 +70,17 @@ export default class GameCharacter {
 
     _lastAnimationState;
     updateState() {
-        if (this.HP <= 0) this.animationState = 'die';
+        if (this.HP <= 0) {
+            this.animationState = 'die';
+            this.isAlive = false;
+        }
+
         if (this.animationState && this.animationState != this._lastAnimationState) {
             if (this.prefab?.animations && this.prefab.animations[this.animationState]) {
                 var reset = false;
-                // TODO: this is a hack, seriously, animations need work
+                // TODO TODO: this is a hack, seriously, animations need work
                 if (this.animationState == 'die' || this.animationState == 'attack') {
-                    console.log('Javascript reset');
+                    console.log('die/attack reset');
                     reset = true;
                 }
                 this.character.setAnimationGroup(this.prefab.animations[this.animationState], reset);
@@ -85,7 +94,12 @@ export default class GameCharacter {
             var endWalk = new Callback(() => {
                 this.place(finalSquare);
                 this.state.update();
-                this.state.stateChain = ['turn', 'mainMenu'];
+                if (this.isAI) {
+                    this.state.stateChain = ['aiTurn', 'mainMenu'];
+                }
+                else {
+                    this.state.stateChain = ['turn', 'mainMenu'];
+                }
                 this.state.loop.go();
             })
             this.character.setPathFromSequence(this.walkPath, this.animations['walk'], 15, endWalk.callString);
@@ -95,7 +109,7 @@ export default class GameCharacter {
 
     attack(targetGameCharacter) {
         console.log(this.name + ' attacks ' + targetGameCharacter.name);
-        this.turn.actions = this.turn.actions.filter(act=>act != 'action');
+        this.turn.actions = this.turn.actions.filter(act => act != 'action');
         console.log('' + this.turn.actions);
         var damage = Math.ceil(Math.random() * 6);
         targetGameCharacter.HP -= damage;

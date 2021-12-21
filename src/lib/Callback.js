@@ -1,9 +1,8 @@
-export default class Callback {
-    key;    
+export default class Callback { 
     constructor(fn, global = false) {
         this.key = '_callback' + Math.random();
         this.global = global;
-
+        window.currentScene = window.currentScene ?? {};
         if (!this.global) {
             window.currentScene[this.key] = fn;
         }
@@ -23,13 +22,9 @@ export default class Callback {
             call = `window._callbacks["${this.key}"]();`;
         }
 
-        return `try {
+        return `
     ${call}
-}
-catch(e) {
-    console.error('Error executing callback');
-    console.error(e);
-}`;
+    `
     }
 
     static delayed(seconds, fn, global = false) {
@@ -41,5 +36,10 @@ catch(e) {
             console.error(`error calling _i.delayedEval with ${seconds} ${fn} ${global}`);
             console.error(e);
         }
+    }
+
+    static call(fn, global = false) {
+        var cb = new Callback(fn, global);
+        return cb.callString;
     }
 }

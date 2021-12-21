@@ -11,6 +11,7 @@ export const setOnScreenControls = (active = true) => {
 export default class UIManager {
     constructor() {
         window.characterClick = this.receiveCharacterClick;
+        window.characterMove = this.receiveCharacterMove;
     }
 
     clear() {
@@ -19,7 +20,7 @@ export default class UIManager {
         window.backButton = () => {};
     }
 
-    setOnScreenControls = (active = true) => {
+    setOnScreenControls(active = true) {
         try {
             _i.onScreenControls(active);
         }
@@ -29,25 +30,55 @@ export default class UIManager {
         }
     }
 
-    registerCharacterForClicks = (character) => {
+    registerCharacterForClicks(character) {
         window._clickableCharacters[character.name] = character;
     }
+
+    registerCharacterForMove(character) {
+        window._moveCallbackCharacters[character.name] = character;
+    }
+
+    unregisterCharacterForMove(character) {
+        window._moveCallebackCharacters[character.name] = character;
+    }
     
-    unregisterCharacterForClicks = (character) => {
+    unregisterCharacterForClicks(character) {
         window._clickableCharacters[character.name] = undefined;
     }
     
-    receiveCharacterClick = (name) => {
+    receiveCharacterClick(name) {
         if (name in window._clickableCharacters[name]) {
             window._clickableCharacters[name].receiveClick();
         }
     }
 
-    clearCharacterClicks = () => {
+    receiveCharacterMove(name) {
+        if (name in window._moveCallbackCharacters[name]) {
+            window._moveCallbackCharacters.moveCallback();
+        }
+    }
+
+    clearCharacterClicks() {
         window._clickableCharacters = {};
     }
 
-    setBackButton = (fn) => {
+    setBackButton(fn) {
         window.backButton = fn;
+    }
+
+    static get width() {
+        return _i.screenWidth();
+    }
+
+    static get height() {
+        return _i.screenHeight();
+    }
+
+    static widthOrMax(width) {
+        return Math.min(width, this.width);
+    }
+
+    static heightOrMax(height) {
+        return Math.min(height, this.height);
     }
 }

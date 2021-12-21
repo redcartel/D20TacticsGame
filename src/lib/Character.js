@@ -2,9 +2,8 @@ import { toSpaceCoords } from './util';
 import AnimationPath from './AnimationPath';
 
 export default class Character {
-    animationGroup;
 
-    constructor(name, sprite = null, position = null, scale = null) {
+    constructor(name, sprite = null, position = null, scale = null, revealsMap = true) {
         this.name = name;
         this.sprite = sprite;
         if (position) this.position = position;
@@ -12,7 +11,7 @@ export default class Character {
         if (scale) this.scale = null;
         else this.scale = [1, 1];
 
-        _i.createCharacter(this.name, this.sprite?.name, this.scale)
+        _i.createCharacter(this.name, this.sprite?.name, this.scale, revealsMap);
     }
 
     destroy() {

@@ -9,7 +9,7 @@ export const characterPrefabs = {
             animations: {
                 walk: AnimationGroups.clericWalkGroup,
                 idle: AnimationGroups.clericWalkGroup,
-                die: AnimationGroups.rogueDieGroup
+                die: AnimationGroups.clericDieGroup
             },
             sheet: {
                 HP: 8,
